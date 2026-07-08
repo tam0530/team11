@@ -1,12 +1,17 @@
 class Item {
 
+  //==========================
   // アイテムの種類
+  //==========================
   static final int MAP = 0;
   static final int SHIELD = 1;
 
-  // 座標
+  // アイテムのマス座標
   int x;
   int y;
+
+  // 1マスの大きさ
+  int tileSize;
 
   // アイテムの種類
   int type;
@@ -17,50 +22,66 @@ class Item {
   // アイテム画像
   PImage img;
 
+
   //==========================
   // コンストラクタ
   //==========================
-  Item(int x, int y, int type) {
+  Item(int x, int y, int type, int tileSize) {
 
     this.x = x;
     this.y = y;
     this.type = type;
+    this.tileSize = tileSize;
 
     collected = false;
 
-    if(type == MAP){
+    // アイテム画像読み込み
+    if (type == MAP) {
+
       img = loadImage("mapItem.png");
-    }else{
+
+    } else {
+
       img = loadImage("shieldItem.png");
+
     }
 
-    img.resize(16,16);
+    // サイズ調整
+    img.resize(tileSize, tileSize);
 
   }
+
 
   //==========================
   // アイテム描画
   //==========================
-  void display(){
+  void display() {
 
-    if(collected) return;
+    if (collected) return;
 
-    image(img,x*16,y*16);
+    image(
+      img,
+      x * tileSize,
+      y * tileSize
+    );
 
   }
 
-  //==========================
-  // プレイヤーが取得したか
-  //==========================
-  boolean checkGet(Player player){
 
-    if(collected){
+  //==========================
+  // アイテム取得判定
+  //==========================
+  boolean checkGet(Player player) {
+
+    if (collected) {
+
       return false;
+
     }
 
-    if(player.getX()==x && player.getY()==y){
+    if (player.getX() == x && player.getY() == y) {
 
-      collected=true;
+      collected = true;
       return true;
 
     }
@@ -69,10 +90,11 @@ class Item {
 
   }
 
+
   //==========================
   // アイテム種類取得
   //==========================
-  int getType(){
+  int getType() {
 
     return type;
 
