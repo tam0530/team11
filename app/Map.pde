@@ -19,105 +19,140 @@ class Map {
 
   void generateMap() {
 
-    // 最初は全部壁
-    for (int y=0; y<ROW; y++) {
-      for (int x=0; x<COL; x++) {
-        map[y][x]=WALL;
+    // 全部壁にする
+    for (int y = 0; y < ROW; y++) {
+      for (int x = 0; x < COL; x++) {
+        map[y][x] = WALL;
       }
     }
 
-    // スタート
-    int x=0;
-    int y=0;
-    map[y][x]=START;
+    // 穴掘り開始
+    dig(1, 1);
 
-    // 必ず通れる道を作る
-    while (x<COL-1 || y<ROW-1) {
+    // 少し壁を壊して複数ルートを作る
+    for (int i = 0; i < 20; i++) {
 
-      if (x==COL-1) {
-        y++;
-      } else if (y==ROW-1) {
-        x++;
-      } else {
+      int rx = (int)random(1, COL - 1);
+      int ry = (int)random(1, ROW - 1);
 
-        if (random(1)<0.5) {
-          x++;
-        } else {
-          y++;
-        }
-      }
-
-      map[y][x]=ROAD;
-    }
-
-    // ゴール
-    map[ROW-1][COL-1]=GOAL;
-
-    // 周囲をランダムに通路へ変更
-    for (int i=0;i<60;i++) {
-
-      int rx=(int)random(COL);
-      int ry=(int)random(ROW);
-
-      if(map[ry][rx]==WALL){
-        map[ry][rx]=ROAD;
+      if (map[ry][rx] == WALL) {
+        map[ry][rx] = ROAD;
       }
     }
 
-    // 地雷を設置（通路のみ）
-    int mine=0;
+    // スタート・ゴール
+    map[1][1] = START;
+    map[ROW-2][COL-2] = GOAL;
 
-    while(mine<12){
+    // 地雷設置
+    int mine = 0;
 
-      int rx=(int)random(COL);
-      int ry=(int)random(ROW);
+    while (mine < 12) {
 
-      if(map[ry][rx]==ROAD){
+      int rx = (int)random(COL);
+      int ry = (int)random(ROW);
 
-        // スタート付近は除く
-        if(!(rx==0&&ry==0) &&
-           !(rx==COL-1&&ry==ROW-1)){
+      if (map[ry][rx] == ROAD) {
 
-          map[ry][rx]=MINE;
+        if (!(rx == 1 && ry == 1) &&
+          !(rx == COL-2 && ry == ROW-2)) {
+
+          map[ry][rx] = MINE;
           mine++;
         }
       }
     }
   }
 
-  void display(){
+  //=========================
+  // 穴掘り法
+  //=========================
+  void dig(int x, int y) {
+
+    map[y][x] = ROAD;
+
+    int[] dir = {0, 1, 2, 3};
+
+    // シャッフル
+    for (int i = 0; i < 4; i++) {
+      int r = (int)random(4);
+
+      int t = dir[i];
+      dir[i] = dir[r];
+      dir[r] = t;
+    }
+
+    for (int i = 0; i < 4; i++) {
+
+      int dx = 0;
+      int dy = 0;
+
+      switch(dir[i]) {
+
+      case 0:
+        dx = 2;
+        break;
+
+      case 1:
+        dx = -2;
+        break;
+
+      case 2:
+        dy = 2;
+        break;
+
+      case 3:
+        dy = -2;
+        break;
+      }
+
+      int nx = x + dx;
+      int ny = y + dy;
+
+      if (nx > 0 && nx < COL-1 &&
+        ny > 0 && ny < ROW-1) {
+
+        if (map[ny][nx] == WALL) {
+
+          map[y + dy/2][x + dx/2] = ROAD;
+          dig(nx, ny);
+        }
+      }
+    }
+  }
+
+  void display() {
 
     stroke(0);
 
-    for(int y=0;y<ROW;y++){
+    for (int y = 0; y < ROW; y++) {
 
-      for(int x=0;x<COL;x++){
+      for (int x = 0; x < COL; x++) {
 
-        if(map[y][x]==WALL){
+        if (map[y][x] == WALL) {
           fill(80);
-
-        }else{
+        } else {
           fill(255);
         }
 
-        rect(x*SIZE,y*SIZE,SIZE,SIZE);
+        rect(x * SIZE, y * SIZE, SIZE, SIZE);
 
         fill(0);
-        textAlign(CENTER,CENTER);
+        textAlign(CENTER, CENTER);
         textSize(22);
 
-        switch(map[y][x]){
+        switch(map[y][x]) {
 
         case START:
-          text("S",x*SIZE+SIZE/2,y*SIZE+SIZE/2);
+          text("S", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
           break;
 
         case GOAL:
-          text("G",x*SIZE+SIZE/2,y*SIZE+SIZE/2);
+          text("G", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
           break;
 
         case MINE:
-          text("×",x*SIZE+SIZE/2,y*SIZE+SIZE/2);
+          text("×", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
           break;
         }
       }
