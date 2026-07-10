@@ -5,12 +5,9 @@ int cols = 15;
 int rows = 15;
 int cell = 40;
 
-int[][] map = new int[rows][cols];
-// 0:道 1:壁 2:地雷 3:ゴール 4:マップ表示 5:シールド
 
 // ===== プレイヤー =====
-int px = 0;
-int py = 0;
+
 
 // ===== 時間 =====
 boolean memorize = true;
@@ -30,8 +27,8 @@ int mapItemStart = 0;
 
 // ===== サウンド =====
 SoundFile bgm;
-SoundFile bombSE;
-SoundFile clearSE;
+SoundFile gameover;
+SoundFile clear;
 
 // ===== タイトル画面 =====
 boolean title = true;
@@ -39,6 +36,10 @@ boolean title = true;
 // ===== 難易度 =====
 int difficulty = 2;   // 1:簡単 2:普通 3:難しい
 String difficultyName = "普通";
+Map gameMap;
+Player player;
+Item mapItemObj;
+Item shieldItemObj;
 
 //====================================
 
@@ -47,20 +48,23 @@ void setup() {
   size(cols * cell, rows * cell);
    font = createFont("Yu Gothic", 32);
   textFont(font);
+  
+gameMap = new Map();
+player = new Player(1, 1, cell);
+
+mapItemObj = new Item(5, 3, Item.MAP, cell);
+shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
 
   // サウンド
   bgm = new SoundFile(this, "bgm.mp3");
-  bombSE = new SoundFile(this, "bomb.wav");
-  clearSE = new SoundFile(this, "clear.wav");
+  gameover = new SoundFile(this, "gameover.mp3");
+  clear = new SoundFile(this, "clear.mp3");
 
   bgm.loop();
 
-  // マップ生成
-  generateMap();
+
 
   // プレイヤー位置
-  px = 0;
-  py = 0;
 
   startTime = millis();
 }
@@ -88,9 +92,21 @@ void draw() {
   }
 
   // 描画
-  drawMap();
-  drawPlayer();
+  gameMap.display();
 
+mapItemObj.display();
+shieldItemObj.display();
+
+player.display();
+
+if (mapItemObj.checkGet(player)) {
+  mapItem = true;
+  mapItemStart = millis();
+}
+
+if (shieldItemObj.checkGet(player)) {
+  shield = true;
+}
   // 残り時間
   int remain = max(0, (limitTime - (millis() - startTime)) / 1000);
 
@@ -104,6 +120,7 @@ void draw() {
   if (!gameOver && !gameClear && millis() - startTime >= limitTime) {
     gameOver = true;
     bgm.stop();
+    gameover.play();
   }
 
   // ゲームオーバー
@@ -182,7 +199,7 @@ void keyPressed() {
     return;
   }
 
-  movePlayer();
+  player.keyMove();
 }
 
 //====================================
@@ -198,13 +215,15 @@ void restartGame() {
 
   memorize = true;
 
-  generateMap();
+ gameMap = new Map();
+player = new Player(1, 1, cell);
 
-  px = 0;
-  py = 0;
+mapItemObj = new Item(5, 3, Item.MAP, cell);
+shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
 
   startTime = millis();
 
+  bgm.stop();
   bgm.loop();
 
   loop();
