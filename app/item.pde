@@ -55,9 +55,21 @@ class Item {
   //==========================
   // アイテム描画
   //==========================
-  void display() {
+  void display(Player player, boolean reveal) {
 
     if (collected) return;
+
+    // 覚える時間中・マップアイテム使用中でなければ
+    // 自分の周り1マス以外は見せない
+    if (!reveal) {
+
+      int dx = abs(x - player.getX());
+      int dy = abs(y - player.getY());
+
+      if (dx > 1 || dy > 1) {
+        return;
+      }
+    }
 
     image(
       img,

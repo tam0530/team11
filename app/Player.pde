@@ -11,20 +11,19 @@ class Player {
   PImage img;
 
 
+  //==========================
   // コンストラクタ
+  //==========================
   Player(int startX, int startY, int tileSize) {
 
     this.x = startX;
     this.y = startY;
     this.tileSize = tileSize;
 
-    // man.png読み込み
+    // キャラクター画像読み込み
     img = loadImage("man.png");
-    
-    // 28×28に調整
     img.resize(tileSize, tileSize);
   }
-
 
 
   //==========================
@@ -32,96 +31,104 @@ class Player {
   //==========================
   void display() {
 
-    image(
-      img,
-      x * tileSize,
-      y * tileSize
-    );
+    image(img, x * tileSize, y * tileSize);
 
   }
-
 
 
   //==========================
   // 移動処理
   //==========================
-  void move(int dx, int dy, Maze maze) {
-
+  void move(int dx, int dy, Map gameMap) {
 
     int nextX = x + dx;
     int nextY = y + dy;
 
-
-    // 迷路外、壁チェック
-    if(!maze.isWall(nextX,nextY)){
+    // 壁でなければ移動
+    if (!gameMap.isWall(nextX, nextY)) {
 
       x = nextX;
       y = nextY;
 
+      // 地雷判定
+      if (gameMap.map[y][x] == gameMap.MINE) {
+
+        if (shield) {
+          shield = false;
+          gameMap.map[y][x] = gameMap.ROAD;
+        } else {
+          // すぐにゲームオーバーにはせず、バツ印の演出を開始する
+          // （実際のゲームオーバー処理は app.pde の draw() 側で演出後に行う）
+          exploding = true;
+          explodeStart = millis();
+          explodeX = x;
+          explodeY = y;
+          explosion.play();
+        }
+      }
+
+      // ゴール判定
+      if (gameMap.map[y][x] == gameMap.GOAL) {
+
+        gameClear = true;
+        bgm.stop();
+        clear.play();
+
+      }
     }
-
   }
-
 
 
   //==========================
   // キー操作
   //==========================
-  void keyMove(Maze maze){
+  void keyMove(Map gameMap) {
 
+    if (keyCode == UP) {
 
-    if(keyCode == UP){
+      move(0, -1, gameMap);
 
-      move(0,-1,maze);
+    } else if (keyCode == DOWN) {
 
-    }
-    else if(keyCode == DOWN){
+      move(0, 1, gameMap);
 
-      move(0,1,maze);
+    } else if (keyCode == LEFT) {
 
-    }
-    else if(keyCode == LEFT){
+      move(-1, 0, gameMap);
 
-      move(-1,0,maze);
+    } else if (keyCode == RIGHT) {
 
-    }
-    else if(keyCode == RIGHT){
-
-      move(1,0,maze);
+      move(1, 0, gameMap);
 
     }
-
   }
-
 
 
   //==========================
   // 現在位置取得
   //==========================
-  int getX(){
+  int getX() {
 
     return x;
 
   }
 
 
-  int getY(){
+  int getY() {
 
     return y;
 
   }
 
 
-
   //==========================
   // 初期位置変更
   //==========================
-  void setPosition(int x,int y){
+  void setPosition(int x, int y) {
 
-    this.x=x;
-    this.y=y;
+    this.x = x;
+    this.y = y;
 
   }
-
 
 }

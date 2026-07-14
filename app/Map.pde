@@ -44,10 +44,14 @@ class Map {
     map[1][1] = START;
     map[ROW-2][COL-2] = GOAL;
 
-    // 地雷設置
+    // 地雷設置（地雷を置いても必ず正規ルートが残るようにする）
     int mine = 0;
+    int attempts = 0;
+    int maxAttempts = 2000;
 
-    while (mine < 12) {
+    while (mine < 12 && attempts < maxAttempts) {
+
+      attempts++;
 
       int rx = (int)random(COL);
       int ry = (int)random(ROW);
@@ -58,10 +62,65 @@ class Map {
           !(rx == COL-2 && ry == ROW-2)) {
 
           map[ry][rx] = MINE;
-          mine++;
+
+          // この地雷を置いたことでスタート→ゴールの安全な道が
+          // なくなってしまう場合は置くのをやめる
+          if (hasSafePath()) {
+            mine++;
+          } else {
+            map[ry][rx] = ROAD;
+          }
         }
       }
     }
+  }
+
+  //=========================
+  // 地雷を踏まずにスタートからゴールへ
+  // 到達できるかどうかを幅優先探索でチェック
+  //=========================
+  boolean hasSafePath() {
+
+    boolean[][] visited = new boolean[ROW][COL];
+    ArrayList<int[]> queue = new ArrayList<int[]>();
+
+    queue.add(new int[]{1, 1});
+    visited[1][1] = true;
+
+    int goalX = COL - 2;
+    int goalY = ROW - 2;
+
+    int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    while (!queue.isEmpty()) {
+
+      int[] cur = queue.remove(0);
+      int cx = cur[0];
+      int cy = cur[1];
+
+      if (cx == goalX && cy == goalY) {
+        return true;
+      }
+
+      for (int[] d : dirs) {
+
+        int nx = cx + d[0];
+        int ny = cy + d[1];
+
+        if (nx >= 0 && nx < COL && ny >= 0 && ny < ROW && !visited[ny][nx]) {
+
+          int cell = map[ny][nx];
+
+          // 壁と地雷は「安全なルート」としては通れない扱いにする
+          if (cell != WALL && cell != MINE) {
+            visited[ny][nx] = true;
+            queue.add(new int[]{nx, ny});
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   //=========================
@@ -121,13 +180,19 @@ class Map {
     }
   }
 
-  void display() {
+  void display(Player player, boolean reveal) {
 
     stroke(0);
 
     for (int y = 0; y < ROW; y++) {
 
       for (int x = 0; x < COL; x++) {
+
+        // 覚える時間中・マップアイテム使用中でなければ
+        // 自分の周り1マス以外は暗くして見せない
+        if (!reveal && !isVisible(player, x, y)) {
+          continue;
+        }
 
         if (map[y][x] == WALL) {
           fill(80);
@@ -158,4 +223,21 @@ class Map {
       }
     }
   }
+  // プレイヤーの周り1マス（8近傍）以内かどうか
+  boolean isVisible(Player player, int x, int y) {
+
+    int dx = abs(x - player.getX());
+    int dy = abs(y - player.getY());
+
+    return dx <= 1 && dy <= 1;
+  }
+
+  boolean isWall(int x, int y) {
+
+  if (x < 0 || x >= COL || y < 0 || y >= ROW) {
+    return true;
+  }
+
+  return map[y][x] == WALL;
+}
 }
