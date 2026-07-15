@@ -15,6 +15,7 @@ void drawTitle() {
   text("1 : 簡単（15秒）", width/2, 250);
   text("2 : 普通（10秒）", width/2, 300);
   text("3 : 難しい（5秒）", width/2, 350);
+  text("4 : 超難しい（アイテムなし）", width/2, 400);
 
   textSize(18);
   text("数字キーを押して開始", width/2, 450);
