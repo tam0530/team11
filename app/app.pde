@@ -1,5 +1,6 @@
 import processing.sound.*;
 PFont font;
+
 // ===== マップ設定 =====
 int cols = 15;
 int rows = 15;
@@ -365,6 +366,12 @@ void returnTitle() {
   showStart = false;
   canMove = false;
 
+
+  gameMap = new GameMap();
+  player = new Player(1, 1, cell);
+
+  mapItemObj = new Item(5, 3, Item.MAP, cell);
+  shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
   title = true;
 
   bgm.stop();
