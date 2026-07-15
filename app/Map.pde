@@ -182,23 +182,16 @@ class GameMap {
 
   void display(Player player, boolean reveal) {
 
+  // 覚える時間中・マップアイテム中は全体表示
+  if (reveal) {
+
     stroke(0);
 
     for (int y = 0; y < ROW; y++) {
-
       for (int x = 0; x < COL; x++) {
 
-        // 覚える時間中・マップアイテム使用中でなければ
-        // 自分の周り1マス以外は暗くして見せない
-        if (!reveal && !isVisible(player, x, y)) {
-          continue;
-        }
-
-        if (map[y][x] == WALL) {
-          fill(80);
-        } else {
-          fill(255);
-        }
+        if (map[y][x] == WALL) fill(80);
+        else fill(255);
 
         rect(x * SIZE, y * SIZE, SIZE, SIZE);
 
@@ -209,20 +202,80 @@ class GameMap {
         switch(map[y][x]) {
 
         case START:
-          text("S", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
+          text("S", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
           break;
 
         case GOAL:
-          text("G", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
+          text("G", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
           break;
 
         case MINE:
-          text("×", x * SIZE + SIZE/2, y * SIZE + SIZE/2);
+          text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
           break;
         }
       }
     }
+
+    return;
   }
+
+
+  //=========================
+  // 暗闇（ズーム表示）
+  //=========================
+
+  pushMatrix();
+
+  float zoom = 2.5;
+
+  translate(width/2, height/2);
+
+  scale(zoom);
+
+  translate(
+    -(player.getX()*SIZE + SIZE/2),
+    -(player.getY()*SIZE + SIZE/2)
+  );
+
+  stroke(0);
+
+  for (int y = 0; y < ROW; y++) {
+    for (int x = 0; x < COL; x++) {
+
+      if (!isVisible(player, x, y))
+        continue;
+
+      if (map[y][x] == WALL)
+        fill(80);
+      else
+        fill(255);
+
+      rect(x*SIZE, y*SIZE, SIZE, SIZE);
+
+      fill(0);
+      textAlign(CENTER, CENTER);
+      textSize(22);
+
+      switch(map[y][x]) {
+
+      case START:
+        text("S", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+        break;
+
+      case GOAL:
+        text("G", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+        break;
+
+      case MINE:
+        text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+        break;
+      }
+    }
+  }
+
+  popMatrix();
+}
+
   // プレイヤーの周り1マス（8近傍）以内かどうか
   boolean isVisible(Player player, int x, int y) {
 

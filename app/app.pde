@@ -121,7 +121,7 @@ void draw() {
     gameMap.display(player, reveal);
     mapItemObj.display(player, reveal);
     shieldItemObj.display(player, reveal);
-    player.display();
+player.display(reveal);
 
     // 経過割合（0→1）に合わせてバツ印を大きくする
     float progress = constrain((millis() - explodeStart) / (float) explodeDuration, 0, 1);
@@ -176,7 +176,7 @@ void draw() {
 mapItemObj.display(player, reveal);
 shieldItemObj.display(player, reveal);
 
-player.display();
+player.display(reveal);
 
 if (mapItemObj.checkGet(player)) {
   mapItem = true;

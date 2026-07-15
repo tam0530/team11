@@ -29,11 +29,29 @@ class Player {
   //==========================
   // プレイヤー描画
   //==========================
-  void display() {
+  void display(boolean reveal) {
 
+  if (reveal) {
     image(img, x * tileSize, y * tileSize);
-
+    return;
   }
+
+  pushMatrix();
+
+  float zoom = 2.5;
+
+  translate(width/2, height/2);
+  scale(zoom);
+
+  translate(
+    -(x * tileSize + tileSize/2),
+    -(y * tileSize + tileSize/2)
+  );
+
+  image(img, x * tileSize, y * tileSize);
+
+  popMatrix();
+}
 
 
   //==========================
