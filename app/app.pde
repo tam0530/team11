@@ -58,7 +58,7 @@ boolean title = true;
 // ===== 難易度 =====
 int difficulty = 2;   // 1:簡単 2:普通 3:難しい
 String difficultyName = "普通";
-Map gameMap;
+GameMap gameMap;
 Player player;
 Item mapItemObj;
 Item shieldItemObj;
@@ -71,7 +71,7 @@ void setup() {
    font = createFont("Yu Gothic", 32);
   textFont(font);
   
-gameMap = new Map();
+gameMap = new GameMap();
 player = new Player(1, 1, cell);
 
 mapItemObj = new Item(5, 3, Item.MAP, cell);
@@ -243,7 +243,7 @@ if (shieldItemObj.checkGet(player)) {
     text(gameOverReason, width/2, height/2 + 40);
 
     textSize(20);
-    text("Press R to Restart", width/2, height/2 + 75);
+    text("Press T to Title", width/2, height/2 + 75);
 
     noLoop();
   }
@@ -259,7 +259,7 @@ if (shieldItemObj.checkGet(player)) {
     text("GAME CLEAR", width/2, height/2);
 
     textSize(20);
-    text("Press R to Restart", width/2, height/2 + 50);
+    text("Press T to Title", width/2, height/2 + 50);
 
     noLoop();
   }
@@ -301,8 +301,8 @@ void keyPressed() {
 
   if (gameOver || gameClear) {
 
-    if (key == 'r' || key == 'R') {
-      restartGame();
+    if (key == 't' || key == 'T') {
+      returnTitle();
     }
 
     return;
@@ -336,7 +336,7 @@ void restartGame() {
   canMove = false;
   playStartTime = 0;
 
- gameMap = new Map();
+ gameMap = new GameMap();
 player = new Player(1, 1, cell);
 
 mapItemObj = new Item(5, 3, Item.MAP, cell);
@@ -346,6 +346,28 @@ shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
 
   bgm.stop();
   bgm.loop();
+
+  loop();
+}
+// タイトル画面へ戻る
+void returnTitle() {
+
+  gameOver = false;
+  gameClear = false;
+  gameOverReason = "";
+
+  exploding = false;
+
+  shield = false;
+  mapItem = false;
+
+  memorize = true;
+  showStart = false;
+  canMove = false;
+
+  title = true;
+
+  bgm.stop();
 
   loop();
 }
