@@ -39,7 +39,7 @@ class Player {
   //==========================
   // 移動処理
   //==========================
-  void move(int dx, int dy, Map gameMap) {
+  void move(int dx, int dy, GameMap gameMap) {
 
     int nextX = x + dx;
     int nextY = y + dy;
@@ -82,7 +82,7 @@ class Player {
   //==========================
   // キー操作
   //==========================
-  void keyMove(Map gameMap) {
+  void keyMove(GameMap gameMap) {
 
     if (keyCode == UP) {
 
