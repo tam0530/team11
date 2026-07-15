@@ -32,6 +32,9 @@ int playStartTime = 0;
 boolean gameOver = false;
 boolean gameClear = false;
 String gameOverReason = "";   // ゲームオーバーの理由（地雷／時間切れ）
+boolean itemPause = false;
+int itemPauseStart = 0;
+int itemPauseTime = 5000; // 5秒停止
 
 // ===== 地雷を踏んだ時の爆発演出 =====
 boolean exploding = false;
@@ -97,6 +100,10 @@ shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
 //====================================
 
 void draw() {
+  
+  if (itemPause && millis() - itemPauseStart >= itemPauseTime) {
+  itemPause = false;
+}
   
    // タイトル画面
   if (title) {
@@ -174,6 +181,10 @@ player.display();
 if (mapItemObj.checkGet(player)) {
   mapItem = true;
   mapItemStart = millis();
+
+  itemPause = true;
+  itemPauseStart = millis();
+
   itemGet.play();
 }
 
@@ -310,11 +321,15 @@ void keyPressed() {
   }
 
   // 覚える時間中・スタート表示中・爆発演出中は操作不可
-  if (!canMove || exploding) {
+  if (!canMove || exploding || itemPause) {
     return;
   }
 
-  player.keyMove(gameMap);
+  if (memorize || showStart) {
+  return;
+}
+
+player.keyMove(gameMap);
 }
 
 //====================================
