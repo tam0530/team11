@@ -206,6 +206,9 @@ if (difficulty != 4) {
   if (mapItemObj.checkGet(player)) {
     mapItem = true;
     mapItemStart = millis();
+    
+    itemPause = true;          
+  itemPauseStart = millis(); 
     itemGet.play();
   }
 
