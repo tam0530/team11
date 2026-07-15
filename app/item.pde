@@ -55,30 +55,49 @@ class Item {
   //==========================
   // アイテム描画
   //==========================
-  void display(Player player, boolean reveal) {
+ //==========================
+// アイテム描画
+//==========================
+void display(Player player, boolean reveal) {
 
-    if (collected) return;
+  if (collected) return;
 
-    // 覚える時間中・マップアイテム使用中でなければ
-    // 自分の周り1マス以外は見せない
-    if (!reveal) {
+  // 暗闇では近くしか表示しない
+  if (!reveal) {
 
-      int dx = abs(x - player.getX());
-      int dy = abs(y - player.getY());
+    int dx = abs(x - player.getX());
+    int dy = abs(y - player.getY());
 
-      if (dx > 1 || dy > 1) {
-        return;
-      }
+    if (dx > 1 || dy > 1) {
+      return;
     }
-
-    image(
-      img,
-      x * tileSize,
-      y * tileSize
-    );
-
   }
 
+  if (reveal) {
+
+    // 全体表示
+    image(img, x * tileSize, y * tileSize);
+
+  } else {
+
+    // 暗闇（ズーム表示）
+    pushMatrix();
+
+    float zoom = 2.5;
+
+    translate(width / 2, height / 2);
+    scale(zoom);
+
+    translate(
+      -(player.getX() * tileSize + tileSize / 2),
+      -(player.getY() * tileSize + tileSize / 2)
+    );
+
+    image(img, x * tileSize, y * tileSize);
+
+    popMatrix();
+  }
+}
 
   //==========================
   // アイテム取得判定
