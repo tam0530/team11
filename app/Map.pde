@@ -1,4 +1,4 @@
-class Map {
+class GameMap {
 
   final int ROW = 15;
   final int COL = 15;
@@ -12,7 +12,7 @@ class Map {
 
   int[][] map;
 
-  Map() {
+  GameMap() {
     map = new int[ROW][COL];
     generateMap();
   }
