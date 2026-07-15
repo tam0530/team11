@@ -119,8 +119,10 @@ void draw() {
     boolean reveal = memorize || mapItem;
 
     gameMap.display(player, reveal);
-    mapItemObj.display(player, reveal);
-    shieldItemObj.display(player, reveal);
+    
+  mapItemObj.display(player, reveal);
+  shieldItemObj.display(player, reveal);
+
 player.display(reveal);
 
     // 経過割合（0→1）に合わせてバツ印を大きくする
@@ -192,19 +194,26 @@ strokeWeight(1);
   // 描画
   gameMap.display(player, reveal);
 
-mapItemObj.display(player, reveal);
-shieldItemObj.display(player, reveal);
+if (difficulty != 4) {
+  mapItemObj.display(player, reveal);
+  shieldItemObj.display(player, reveal);
+}
 
 player.display(reveal);
 
-if (mapItemObj.checkGet(player)) {
-  mapItem = true;
-  mapItemStart = millis();
+if (difficulty != 4) {
 
-  itemPause = true;
-  itemPauseStart = millis();
+  if (mapItemObj.checkGet(player)) {
+    mapItem = true;
+    mapItemStart = millis();
+    itemGet.play();
+  }
 
-  itemGet.play();
+  if (shieldItemObj.checkGet(player)) {
+    shield = true;
+    itemGet.play();
+  }
+
 }
 
 if (shieldItemObj.checkGet(player)) {
@@ -321,7 +330,14 @@ void keyPressed() {
       difficultyName = "難しい";
       memorizeTime = 5000;
 
-    } else {
+    }
+    else if (key == '4') {
+  difficulty = 4;
+  difficultyName = "地獄";
+  memorizeTime = 3000;
+
+} 
+    else {
       return;
     }
 
