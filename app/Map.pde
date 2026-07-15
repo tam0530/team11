@@ -210,7 +210,10 @@ class GameMap {
           break;
 
         case MINE:
-          text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+        if (reveal) {
+    text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+  }
+          
           break;
         }
       }
@@ -267,7 +270,10 @@ class GameMap {
         break;
 
       case MINE:
-        text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+        
+        if (reveal) {
+    text("×", x*SIZE+SIZE/2, y*SIZE+SIZE/2);
+  }
         break;
       }
     }
