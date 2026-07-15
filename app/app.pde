@@ -6,6 +6,8 @@ int cols = 15;
 int rows = 15;
 int cell = 40;
 
+// ===== マニュアル画面 =====
+boolean manual = false;
 
 // ===== プレイヤー =====
 
@@ -104,10 +106,21 @@ void draw() {
   if (itemPause && millis() - itemPauseStart >= itemPauseTime) {
   itemPause = false;
 }
+
+// マニュアル画面
+if (manual) {
+  drawManual();
+  return;
+}
   
    // タイトル画面
   if (title) {
     drawTitle();
+        if (key == 'm' || key == 'M') {
+      manual = true;
+      title = false;
+      return;
+   }
     return;
   }
 
@@ -314,7 +327,16 @@ if (shieldItemObj.checkGet(player)) {
 // キーボード操作
 void keyPressed() {
   
+  // マニュアル画面
+  if (manual) {
 
+    if (keyCode == ENTER) {
+      manual = false;
+      title = true;
+    }
+     return;
+  }
+  
   // タイトル画面
   if (title) {
 
@@ -430,4 +452,36 @@ void returnTitle() {
   bgm.stop();
 
   loop();
+}
+
+void drawManual() {
+
+  background(20);
+
+  fill(255);
+  textAlign(CENTER);
+  textSize(40);
+  text("遊び方", width/2, 60);
+
+  textAlign(LEFT);
+  textSize(20);
+
+  text("【目的】", 40, 120);
+  text("・ゴール(G)までたどり着こう", 60, 150);
+
+  text("【操作方法】", 40, 200);
+  text("・↑ ↓ ← → キーで移動", 60, 230);
+
+  text("【アイテム】", 40, 290);
+  text("・地図：5秒間マップ全体を表示", 60, 320);
+  text("・盾：地雷を1回だけ防ぐ", 60, 350);
+
+  text("【注意】", 40, 410);
+  text("・地雷を踏むとゲームオーバー", 60, 440);
+  text("・制限時間内にゴールしよう", 60, 470);
+
+  fill(255,255,0);
+  textAlign(CENTER);
+  text("Enterキーでタイトルへ戻る", width/2, 560);
+
 }
