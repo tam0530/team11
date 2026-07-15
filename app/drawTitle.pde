@@ -19,4 +19,8 @@ void drawTitle() {
 
   textSize(18);
   text("数字キーを押して開始", width/2, 450);
+  
+  fill(255, 255, 0);
+  textSize(18);
+  text("Mキー：遊び方を見る", width/2, 490);
 }
