@@ -127,14 +127,33 @@ player.display(reveal);
     float progress = constrain((millis() - explodeStart) / (float) explodeDuration, 0, 1);
     float margin = lerp(cell * 0.45, 4, progress);
 
-    float cx = explodeX * cell;
-    float cy = explodeY * cell;
+   pushMatrix();
 
-    stroke(255, 0, 0);
-    strokeWeight(6);
-    line(cx + margin, cy + margin, cx + cell - margin, cy + cell - margin);
-    line(cx + cell - margin, cy + margin, cx + margin, cy + cell - margin);
-    strokeWeight(1);
+float zoom = 2.5;
+
+translate(width / 2, height / 2);
+scale(zoom);
+
+translate(
+  -(player.getX() * cell + cell / 2),
+  -(player.getY() * cell + cell / 2)
+);
+
+float cx = explodeX * cell;
+float cy = explodeY * cell;
+
+stroke(255, 0, 0);
+strokeWeight(6);
+
+line(cx + margin, cy + margin,
+     cx + cell - margin, cy + cell - margin);
+
+line(cx + cell - margin, cy + margin,
+     cx + margin, cy + cell - margin);
+
+popMatrix();
+
+strokeWeight(1);
 
     // 演出が終わったらゲームオーバー画面へ
     if (millis() - explodeStart >= explodeDuration) {
