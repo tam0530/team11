@@ -103,11 +103,15 @@ shieldItemObj = new Item(11, 9, Item.SHIELD, cell);
 
 void draw() {
   
+  if (!title && !gameOver && !gameClear && !bgm.isPlaying()) {
+  bgm.loop();
+}
+  
   if (itemPause && millis() - itemPauseStart >= itemPauseTime) {
   itemPause = false;
 }
 
-// マニュアル画面
+// マニュアル画面F
 if (manual) {
   drawManual();
   return;
@@ -450,7 +454,7 @@ void returnTitle() {
   title = true;
 
   bgm.stop();
-
+  bgm.loop();
   loop();
 }
 
