@@ -59,13 +59,15 @@ class GameMap {
       if (map[ry][rx] == ROAD) {
 
         if (!(rx == 1 && ry == 1) &&
-          !(rx == COL-2 && ry == ROW-2)) {
+    !(rx == COL-2 && ry == ROW-2) &&
+    !(rx == 5 && ry == 3) &&
+    !(rx == 11 && ry == 9)) {
 
           map[ry][rx] = MINE;
 
           // この地雷を置いたことでスタート→ゴールの安全な道が
           // なくなってしまう場合は置くのをやめる
-          if (hasSafePath()) {
+          if (hasSafePath()&& hasPathToItem()) {
             mine++;
           } else {
             map[ry][rx] = ROAD;
@@ -122,6 +124,64 @@ class GameMap {
 
     return false;
   }
+  
+boolean hasPathToItem() {
+
+  return checkPath(5,3) && checkPath(11,9);
+
+}
+
+
+boolean checkPath(int targetX, int targetY) {
+
+  boolean[][] visited = new boolean[ROW][COL];
+  ArrayList<int[]> queue = new ArrayList<int[]>();
+
+  queue.add(new int[]{1,1});
+  visited[1][1] = true;
+
+  int[][] dirs = {
+    {1,0},{-1,0},{0,1},{0,-1}
+  };
+
+
+  while(!queue.isEmpty()) {
+
+    int[] cur = queue.remove(0);
+
+    int x = cur[0];
+    int y = cur[1];
+
+
+    if(x == targetX && y == targetY) {
+      return true;
+    }
+
+
+    for(int[] d : dirs) {
+
+      int nx = x + d[0];
+      int ny = y + d[1];
+
+
+      if(nx >= 0 && nx < COL &&
+         ny >= 0 && ny < ROW &&
+         !visited[ny][nx]) {
+
+
+        if(map[ny][nx] != WALL &&
+           map[ny][nx] != MINE) {
+
+          visited[ny][nx] = true;
+          queue.add(new int[]{nx,ny});
+
+        }
+      }
+    }
+  }
+
+  return false;
+}
 
   //=========================
   // 穴掘り法
